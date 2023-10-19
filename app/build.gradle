@@ -1,0 +1,82 @@
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+    id("org.spdx.sbom") version "0.2.0"
+}
+
+android {
+    namespace 'com.example.myapplication'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "com.example.myapplication"
+        minSdk 29
+        targetSdk 34
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+    spdxSbom {
+        targets {
+            // create a target named "release",
+            // this is used for the task name (spdxSbomForRelease)
+            // and output file (release.spdx.json)
+            create("release") {
+                // use a different configuration (or multiple configurations)
+                configurations = ['releaseRuntimeClasspath']
+
+                // provide scm info (usually from your CI)
+                scm {
+                    uri.set("my-scm-repository")
+                    revision.set("asdfasdfasdf...")
+                }
+
+                // adjust properties of the document
+                document {
+                    name.set("TEST-SPDX")
+                    namespace.set("https://my.org/spdx/<some UUID>")
+                    creator.set("Person:SantaClaus")
+                    packageSupplier.set("Organization:NorthPoleInc")
+
+                    // add an uber package on the document between the document and the
+                    // root module of the project being analyzed, you probably don't need this
+                    // but it's available if you want to describe the artifact in a special way
+                    //uberPackage {
+                    //    // you must set all or none of these
+                    //    name.set("goose")
+                    //    version.set("1.2.3")
+                    //    supplier.set("Organization:loosebazooka industries")
+                    //}
+                }
+                // optionally have multiple targets
+                // create("another") {
+                // }
+            }
+        }
+    }
+}
+
+dependencies {
+
+    implementation 'androidx.core:core-ktx:1.10.1'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'com.google.android.material:material:1.10.0'
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+}
